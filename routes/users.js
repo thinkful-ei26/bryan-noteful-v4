@@ -19,7 +19,7 @@ router.post('/', (req, res, next) => {
     return User.create(newUser);
   })
   .then(result => {
-    return res.status(201).location(`/api/users/${result.id}`).json(result);
+    return res.status(201).location(`${req.originalUrl}/${result.id}`).json(result);
   })
   .catch(err => {
     if (err.code === 11000) {
