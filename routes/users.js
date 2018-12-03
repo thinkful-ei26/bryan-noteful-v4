@@ -1,15 +1,15 @@
 'use strict';
 
 const express = require('express');
-const mongoose = require('mongoose');
+// const mongoose = require('mongoose');
 const User = require('../models/user');
 const router = express.Router();
 
 /* ========== CREATE A USER ========== */
 router.post('/', (req, res, next) => {
-  const { fullname, username } = req.body;
+  const { fullname, username, password } = req.body;
 
-  const newUser = { fullname, username };
+  const newUser = { fullname, username, password };
 
   /***** Never trust users - validate input *****/
   // if (!name) {
