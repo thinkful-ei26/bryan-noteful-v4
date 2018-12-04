@@ -36,3 +36,5 @@ const localStrategy = new LocalStrategy((username, password, done) => {
 });
 
 passport.use(localStrategy);
+
+// module.exports = { localStrategy };
