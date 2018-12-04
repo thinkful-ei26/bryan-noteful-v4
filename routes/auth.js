@@ -11,7 +11,7 @@ const { JWT_SECRET , JWT_EXPIRY } = require('../config');
 const options = {session: false, failWithError: true};
 const localAuth = passport.authenticate('local', options);
 
-// Create a Json Web Token //
+// ------Create a Json Web Token------ //
 function createAuthToken (user) {
   /* jwt.sign(payload, secretOrPrivateKey, [options, callback])
 (Asynchronous) If a callback is supplied, the callback is called with the err or the JWT.
@@ -28,5 +28,12 @@ router.post('/', localAuth, function (req, res) {
   res.json({ authToken });
 })
 
+// ------Refresh Web Token------ //
+const jwtAuth = passport.authenticate('jwt', { session: false , failWithError: true });
+
+router.post('/refresh', jwtAuth, (req, res) => {
+  const authToken = createAuthToken(req.user);
+  res.json({ authToken });
+});
 
 module.exports = router;
