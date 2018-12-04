@@ -27,4 +27,8 @@ userSchema.statics.hashPassword = function (incomingPassword) {
   return digest;
 }
 
+// Static used before we create the document
+// Virtual property shortcut for organizing properties without setting on a specific document
+// Instance/Method used on a specific document 
+
 module.exports = mongoose.model('User', userSchema);
