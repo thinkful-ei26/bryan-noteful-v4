@@ -7,6 +7,18 @@ const router = express.Router();
 
 /* ========== CREATE A USER ========== */
 router.post('/', (req, res, next) => {
+  const stringFields = ['username', 'password', 'fullname'];
+  const nonStringField = stringFields.find(field => field in req.body && typeof req.body[field] !== 'string');
+  
+  if (nonStringField) {
+    // Status 422: Unprocessable Entity
+    return res.status(422).json({
+      code: 422,
+      reason: 'Validation Error',
+      message: 'All fields must contain strings',
+      location: nonStringField
+    })
+  }
   let { fullname = '', username, password } = req.body;
   fullname = fullname.trim();
   // Set an array containing required fields
@@ -24,18 +36,6 @@ router.post('/', (req, res, next) => {
     })
   }
 
-  const stringFields = ['username', 'password', 'fullname'];
-  const nonStringField = stringFields.find(field => field in req.body && typeof req.body[field] !== 'string');
-
-  if (nonStringField) {
-    // Status 422: Unprocessable Entity
-    return res.status(422).json({
-      code: 422,
-      reason: 'Validation Error',
-      message: 'All fields must contain strings',
-      location: nonStringField
-    })
-  }
 
   const trimmedFields = ['username', 'password'];
   const nonTrimmedField = trimmedFields.find(field => req.body[field].trim() !== req.body[field]);
