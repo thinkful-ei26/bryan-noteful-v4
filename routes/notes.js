@@ -12,42 +12,65 @@ const router = express.Router();
 router.use('/', passport.authenticate('jwt', { session: false, failWithError: true }));
 
 // Create validation functions
-const validateFolders = async (folderId, userId) => {
+const validateFolders = (folderId, userId) => {
   if (folderId === undefined) {
     return Promise.resolve()
   }
-  if (!mongoose.Types.ObjectId.isValid(folderId)) {
-    const err = new Error('The `folderId` is not valid')
+  if (folderId === '') {
+    const err = new Error('The folderId is not valid3')
     err.status = 400
     return Promise.reject(err)
   }
-  console.log('folderId is ', folderId);
-  await Folder.find({
-    userId: req.user.id
-  })
+  if (folderId && !mongoose.Types.ObjectId.isValid(folderId)) {
+    const err = new Error('The folderId is not valid1')
+    err.status = 400
+    return Promise.reject(err)
+  }
+  return Folder.countDocuments({ _id: folderId, userId })
+    .then(count => {
+      if (count === 0 && folderId) {
+        const err = new Error('The folderId is not valid2')
+        err.status = 400
+      return Promise.reject(err)
+    }
+    })
+
 }
 
-const validateTags = async (tags, userId) => {
-  if (tags === undefined) {
-    return Promise.resolve()
+const validateTags = (tags, userId) => {
+  //null, undefined, empty string, negative number
+  if(tags === undefined) {
+    return Promise.resolve();
   }
-  if (tags) {
-    const badIds = tags.filter((tag) => !mongoose.Types.ObjectId.isValid(tag))
-    if (badIds.length) {
-      const err = new Error('The `tags` array contains an invalid `id`')
-      err.status = 400
-      return next(err)
+  
+  if (!Array.isArray(tags)) {
+    const err = new Error('The tags property must be an array');
+    err.status = 400;
+    return Promise.reject(err);
+  }
+
+  const badIds = tags.filter((tag) => !mongoose.Types.ObjectId.isValid(tag));
+  if (badIds.length) {
+    const err = new Error('The tags array contains an invalid id1');
+    err.status = 400;
+    return Promise.reject(err);
+  }
+
+  return Tag.countDocuments({
+    $and: [ {
+      _id: { $in: tags },
+      userId 
     }
-  }
-  await Tag.find({ $and: [{ _id: { $in: tags }, userId }]})
-    .then(results => {
-      if (tags.length !== results.length) {
-        const err = new Error ('The tags array contains an invalid id')
-        err.status = 400
-        return Promise.reject(err)
+    ]
+  }) 
+    .then(count => {
+      if (tags.length - 1 > count) {
+        const err = new Error('The tags array contains an invalid id2');
+        err.status = 400;
+        return Promise.reject(err);
       }
-    })
-}
+    });
+};
 
 /* ========== GET/READ ALL ITEMS ========== */
 router.get('/', (req, res, next) => {
@@ -124,19 +147,16 @@ router.post('/', (req, res, next) => {
 
   Promise.all([
     validateFolders(newNote.folderId, userId),
-    validateTags(newNote.tags, userId) 
+    validateTags(tags, userId) 
   ])
     .then(() => {
-      // console.log('results are ', results);
-      // if (results) {
         return Note.create(newNote)
-      // } 
-          .then((response) => {
-            res.location(`${req.originalUrl}/${response.id}`).status(201).json(response)
-          })
-          .catch(err => {
-            next(err)
-          })
+    })
+    .then(result => {
+      res.location(`${req.originalUrl}/${res.id}`).status(201).json(result)
+    })
+    .catch(err => {
+      next(err)
     })
   // Note.create(newNote)
   //   .then(result => {
@@ -153,8 +173,8 @@ router.put('/:id', (req, res, next) => {
   const userId = req.user.id;
   const toUpdate = {};
   const updateableFields = ['title', 'content', 'folderId', 'tags'];
-  // userId = toUpdate[userId];
 
+  
   updateableFields.forEach(field => {
     if (field in req.body) {
       toUpdate[field] = req.body[field];
@@ -183,7 +203,7 @@ router.put('/:id', (req, res, next) => {
     validateFolders(toUpdate.folderId, userId),
     validateTags(toUpdate.tags, userId)
   ])
-    .then(() => {Note.findByIdAndUpdate({_id: id, userId}, toUpdate, { new: true }).populate('tags')})
+    .then(() => Note.findOneAndUpdate({_id: id, userId}, toUpdate, { new: true }).populate('tags'))
     .then(result => {result ? res.json(result) : next()})
     .catch(err => {next(err)})
 })
