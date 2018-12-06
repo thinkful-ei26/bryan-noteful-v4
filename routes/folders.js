@@ -12,16 +12,12 @@ router.use('/', passport.authenticate('jwt', { session: false, failWithError: tr
 
 /* ========== GET/READ ALL ITEMS ========== */
 router.get('/', (req, res, next) => {
-
-  Folder.find()
-    .sort('name')
-    .then(results => {
-      res.json(results);
-    })
+  const userId = req.user.id
+  Folder.find({userId}).sort('name').then(results => {res.json(results)})
     .catch(err => {
-      next(err);
-    });
-});
+      next(err)
+    })
+})
 
 /* ========== GET/READ A SINGLE ITEM ========== */
 router.get('/:id', (req, res, next) => {

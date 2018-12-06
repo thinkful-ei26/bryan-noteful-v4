@@ -17,7 +17,7 @@ const validateFolders = async (folderId, userId) => {
     return Promise.resolve()
   }
   if (!mongoose.Types.ObjectId.isValid(folderId)) {
-    const err = new Error('The folderId is not valid')
+    const err = new Error('The `folderId` is not valid')
     err.status = 400
     return Promise.reject(err)
   }
