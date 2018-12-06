@@ -28,7 +28,6 @@ mongoose.connect(MONGODB_URI, { useNewUrlParser: true })
       Folder.insertMany(folders),
       Tag.insertMany(tags),
       User.insertMany(users)
-      
     ]);
   })
   .then(results => {
