@@ -30,6 +30,8 @@ describe('Noteful API - Folders', function () {
   let token
   let user
   beforeEach(function () {
+    return Promise.all(users.map(user => User.hashPassword(user.password)))
+    .then(digests => {users.forEach((user, i) => user.password = digests[i])
     return Promise.all([
       User.insertMany(users),
       Folder.insertMany(folders),
@@ -39,6 +41,7 @@ describe('Noteful API - Folders', function () {
         user = users[0];
         token = jwt.sign({ user }, JWT_SECRET, { subject: user.username });
       });
+    })
   });
 
   afterEach(function () {

@@ -32,6 +32,8 @@ describe('Noteful API - Notes', function () {
   let user
   let token
   beforeEach(function () {
+    return Promise.all(users.map(user => User.hashPassword(user.password)))
+    .then(digests => {users.forEach((user, i) => user.password = digests[i])
     return Promise.all([
       User.insertMany(users),
       Note.insertMany(notes),
@@ -40,10 +42,11 @@ describe('Noteful API - Notes', function () {
       Tag.createIndexes(),
       Folder.createIndexes()  
     ])
-    .then(([users]) => {
-      user = users[0];
-      token = jwt.sign({ user }, JWT_SECRET, { subject: user.username });
-    });
+      .then(([users]) => {
+        user = users[0];
+        token = jwt.sign({ user }, JWT_SECRET, { subject: user.username });
+      });
+    })
   });
 
   afterEach(function () {
