@@ -1,3 +1,10 @@
 language: node_js
 node_js: node
 services: mongodb
+deploy:
+  provider: heroku
+  api_key:
+    secure: Q529VxF96KoyumQy2WKAyQ4YhkRb6w+vjpb0NVXkKYbe5LY7KxO5iUIYdL+kuPj7U+IgauDcqCpYiyT3JJ3+nakKV7trT+siBt/NG+uth/y/xuSy+UynB9kA7reVg0DHIvQNGSkbCrty9ExPifYQvVDl5R2Gs5/oqvhxFo9YYRMVED2XcqpSizVO52vOeI8GG6CuyZuY350uaj1ChH34njmvFpjhgf+zrwW0kCkMHqBrbWn7QNqIba0GOiO03PtqpNJWCU02SNluD6CNwCzd5pNqzWPm+brYvZw+2S7RXZFjdzQzCkI9GffMZFmURCk8wbU+x5tAk+Ech6UgGF4e5yPnv6USIP8Snze+M6zHdwkerGWHpOOpp9Bv2Y5wiil6WNmH7qo//vyO+2i7LRrxXAQ4Krp9N8I/y2UyJ+UospiApmsEZkqNTDho53ufCAVwYtJTLhj5FJdy8tFTw3vm2uz26vST34mjsXkpA9ApOmgiJdpxfK28bUC2bdHomwtAcfFo3oFXBCqHY3J+CBCcWWHzA+mAxpHxX5T/MgAwVN3QO6qG/kap3ktPE9WqWlN/8goOWY/avRJOaBnYRkaxaVTWa27ZwV1uJbcdH4mYy7TYTh5YZj/zSL/R8KaNCmLLFiuRgVzvhk1Vs5D8PGZtudEBk7IBCDnNWxiMz/GEkYE=
+  app: bryan-noteful-v4
+  on:
+    repo: thinkful-ei26/bryan-noteful-v4
